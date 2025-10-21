@@ -44,3 +44,25 @@ class Post(db.Model):
             "created_at": self.created_at.isoformat(),
             "likes_count": len(self.likes) # Un dato útil derivado
         }
+class Comment(db.Model):
+    __tablename__ = 'comment'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    text: Mapped[str] = mapped_column(String(500), nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=datetime.datetime.now)
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
+    post_id: Mapped[int] = mapped_column(ForeignKey('post.id'), nullable=False)
+    user: Mapped["User"] = relationship(back_populates="comments")
+    post: Mapped["Post"] = relationship(back_populates="comments")
+    def serialize(self):
+        return {
+            "id": self.id,
+            "text": self.text,
+            "user_id": self.user_id,
+            "post_id": self.post_id
+        }
+class Like(db.Model):
+    __tablename__ = 'like'
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), primary_key=True)
+    post_id: Mapped[int] = mapped_column(ForeignKey('post.id'), primary_key=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=datetime.datetime.now)
+    
