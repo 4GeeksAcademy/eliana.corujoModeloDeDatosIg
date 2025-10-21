@@ -65,4 +65,27 @@ class Like(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), primary_key=True)
     post_id: Mapped[int] = mapped_column(ForeignKey('post.id'), primary_key=True)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=datetime.datetime.now)
-    
+    user: Mapped["User"] = relationship(back_populates="likes")
+    post: Mapped["Post"] = relationship(back_populates="likes")
+
+    def serialize(self):
+        return {
+            "user_id": self.user_id,
+            "post_id": self.post_id,
+            "created_at": self.created_at.isoformat()
+         }
+if __name__ == "__main__":
+    from eralchemy2 import render_er
+    import os
+    if not isinstance(db, SQLAlchemy):
+        raise ValueError("La variable 'db' no es una instancia de SQLAlchemy. Asegúrate de que esté definida.")
+
+        try:dir_path = os.path.dirname(os.path.realpath(__file__))
+        diagram_path = os.path.join(dir_path, '..', 'diagram.png')
+        render_er(db, diagram_path)
+        print(f"Diagrama '{diagram_path}' generado exitosamente.")
+        except Exception as e:
+            print(f"Error generando diagrama: {e}")
+            print("Asegúrate de tener 'eralchemy2' y 'graphviz' instalados.")
+            print("Instala graphviz (ej: 'apt-get install graphviz' o 'brew install graphviz')")
+            print("Y luego 'pip install eralchemy2'")
