@@ -10,7 +10,7 @@ class User(db.Model):
     __tablename__ = 'user'
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(250), nullable=False) # Aumentado el tamaño por si guardas un hash
+    password: Mapped[str] = mapped_column(String(250), nullable=False) 
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     posts: Mapped[List["Post"]] = relationship(back_populates="user", cascade="all, delete-orphan")
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     try:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         diagram_path = os.path.join(dir_path, '..', 'diagram.png')
-        render_er(db, diagram_path)
+        render_er(db.Model, diagram_path)
         print(f"Diagrama '{diagram_path}' generado exitosamente.")
     except Exception as e:
             print(f"Error generando diagrama: {e}")
