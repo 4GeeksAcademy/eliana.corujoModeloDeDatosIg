@@ -30,4 +30,17 @@ class Post(db.Model):
     image_url: Mapped[str] = mapped_column(String(255), nullable=False)
     caption: Mapped[str] = mapped_column(String(500), nullable=True) # El texto del post
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=datetime.datetime.now)
-        
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)    
+    user: Mapped["User"] = relationship(back_populates="posts")
+    comments: Mapped[List["Comment"]] = relationship(back_populates="post", cascade="all, delete-orphan")
+    likes: Mapped[List["Like"]] = relationship(back_populates="post", cascade="all, delete-orphan")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "image_url": self.image_url,
+            "caption": self.caption,
+            "user_id": self.user_id,
+            "created_at": self.created_at.isoformat(),
+            "likes_count": len(self.likes) # Un dato útil derivado
+        }
